@@ -2,7 +2,7 @@ import type { ChangeEvent } from "react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { isAxiosError, type AxiosError } from "axios";
-import { apiClient, TOKEN_STORAGE_KEY } from "@/services/api/client";
+import { apiClient } from "@/services/api/client";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -40,10 +40,24 @@ export default function SignUp() {
   const [agreesToTerms, setAgreesToTerms] = useState(false);
 
   useEffect(() => {
-    const token = document.cookie.split("; ").find((row) => row.startsWith("token="));
-    if (token) {
-      window.location.href = "/browse";
-    }
+    let isMounted = true;
+
+    const checkSession = async () => {
+      try {
+        await apiClient.get<UserProfile>("/api/auth/me/");
+        if (isMounted) {
+          window.location.href = "/browse";
+        }
+      } catch {
+        // unauthenticated users can continue sign-up
+      }
+    };
+
+    void checkSession();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleError = (error: AxiosError<ApiErrorResponse> | Error) => {
@@ -93,7 +107,7 @@ export default function SignUp() {
 
     try {
       const response = await apiClient.post<RegisterResponse>(
-        `${SERVER_URL}/api/auth/register/`,
+        "/api/auth/register/",
         {
           username,
           first_name: firstName,
@@ -106,8 +120,6 @@ export default function SignUp() {
       );
 
       if (response.status === 201 && response.data.token) {
-        window.localStorage.setItem(TOKEN_STORAGE_KEY, response.data.token);
-        document.cookie = `token=${response.data.token};max-age=2592000;path=/`;
         navigate("/browse");
         return;
       }

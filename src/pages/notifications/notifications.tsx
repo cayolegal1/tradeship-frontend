@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useMemo, useState } from "react";
 import type { AxiosError } from "axios";
-import { apiClient, TOKEN_STORAGE_KEY } from "@/services/api/client";
+import { apiClient } from "@/services/api/client";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -26,22 +26,6 @@ export default function Notifications({
 }: NotificationsProps) {
   const [activeFilter, setActiveFilter] = useState<FilterId>("all");
 
-  const token = useMemo(() => {
-    if (typeof window === "undefined") {
-      return null;
-    }
-
-    const localToken = window.localStorage.getItem(TOKEN_STORAGE_KEY);
-    if (localToken) {
-      return localToken;
-    }
-
-    const cookie = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("token="));
-    return cookie ? cookie.split("=")[1] : null;
-  }, []);
-
   const handleError = (error: AxiosError<ApiErrorResponse>) => {
     const message =
       error.response?.data?.message ?? "We could not update your notifications.";
@@ -59,21 +43,11 @@ export default function Notifications({
   };
 
   const markAllAsRead = async () => {
-    if (!token) {
-      return;
-    }
-
     try {
       await apiClient.put(
         "/api/notifications/mark-as-read",
         {
           notification_id: "all",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
         }
       );
 

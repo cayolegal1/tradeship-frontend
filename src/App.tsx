@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import type { AxiosError } from "axios";
 import { apiClient } from "@/services/api/client";
@@ -44,23 +44,13 @@ const normaliseNotifications = (
     marked_as_read: Boolean(item.marked_as_read),
   }));
 
-const getCookieValue = (name: string): string | null => {
-  const cookie = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith(`${name}=`));
-  return cookie ? cookie.split("=")[1] : null;
-};
-
 function App() {
   const location = useLocation();
   const [isLoaded, setIsLoaded] = useState(false);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const token = useMemo(() => getCookieValue("token"), []);
-
   const logout = useCallback(() => {
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     window.location.href = "/auth/";
   }, []);
 
@@ -88,11 +78,6 @@ function App() {
   );
 
   const getUserData = useCallback(async () => {
-    if (!token) {
-      setIsLoaded(true);
-      return;
-    }
-
     try {
       const response = await apiClient.get<UserProfile>("/api/auth/me/");
 
@@ -100,14 +85,11 @@ function App() {
       setIsLoaded(true);
     } catch (error) {
       handleApiError(error as AxiosError<ApiErrorResponse>);
+      setIsLoaded(true);
     }
-  }, [token, handleApiError]);
+  }, [handleApiError]);
 
   const getNotifications = useCallback(async () => {
-    if (!token) {
-      return;
-    }
-
     try {
       const response = await apiClient.get<PaginatedResponse<NotificationApiModel>>(
         "/api/notifications/notifications/"
@@ -117,16 +99,12 @@ function App() {
     } catch (error) {
       handleApiError(error as AxiosError<ApiErrorResponse>);
     }
-  }, [token, handleApiError]);
+  }, [handleApiError]);
 
   useEffect(() => {
-    if (token) {
-      void getUserData();
-      void getNotifications();
-    } else {
-      setIsLoaded(true);
-    }
-  }, [token, getNotifications, getUserData]);
+    void getUserData();
+    void getNotifications();
+  }, [getNotifications, getUserData]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

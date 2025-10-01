@@ -12,13 +12,12 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 // third party
-import axios from 'axios';
+import { apiClient } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 // project import
-import { SERVER_URL } from '../../../../config';
 
 
 export default function Steps() {
@@ -102,11 +101,7 @@ export default function Steps() {
   }, [currentStep]);
 
   const getCategories = () => {
-    axios.get(SERVER_URL + '/api/trade/interests/', {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+    apiClient.get('/api/trade/interests/')
       .then((response) => {
         const categories = response.data.results.map((category) => ({
           id: category.id,

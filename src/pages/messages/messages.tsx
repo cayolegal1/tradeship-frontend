@@ -16,7 +16,7 @@ import { CustomButton } from "../../components/custom-button/custom-button";
 import { messageList } from "../../constants/modul";
 
 // third party
-import { apiClient, TOKEN_STORAGE_KEY } from "@/services/api/client";
+import { apiClient } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -54,8 +54,6 @@ export default function Messages() {
   };
 
   const logout = () => {
-    window.localStorage.removeItem(TOKEN_STORAGE_KEY);
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     navigate("/auth/");
   };
   const getChats = () => {

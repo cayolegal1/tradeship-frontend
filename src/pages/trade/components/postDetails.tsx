@@ -13,15 +13,13 @@ import styles from "./steps/steps.module.scss";
 import CustomSelect from "@/components/custom-select/custom-select";
 
 // third party
-import axios from 'axios';
+import { apiClient } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 // project import
 import { SERVER_URL } from '../../../config';
-
-
 
 export default function PostDetails({
   categoryList,
@@ -47,8 +45,6 @@ export default function PostDetails({
   images,
   setImages
 }) {
-  const token = document.cookie.split('; ').find(row => row.startsWith('token='));
-
   const [search, setSearch] = useState("");
 
   // Filter tags by search
@@ -87,12 +83,7 @@ export default function PostDetails({
       formData.append("images", file);
     });
 
-    axios.post(`${SERVER_URL}/api/trade/items/images`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${token?.split('=')[1]}`,
-      }
-    })
+    apiClient.post("/api/trade/items/images", formData)
     .then(response => {
       setImages([...images, ...response.data.images]);
 

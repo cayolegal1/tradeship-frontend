@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { AxiosError } from "axios";
-import { apiClient, TOKEN_STORAGE_KEY } from "@/services/api/client";
+import { apiClient } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -33,16 +33,6 @@ export default function Profile({ user }: ProfileProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [userData, setUserData] = useState<UserProfile | null>(null);
 
-  const token = (
-    typeof window === "undefined"
-      ? null
-      : window.localStorage.getItem(TOKEN_STORAGE_KEY) ??
-        document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('token='))
-          ?.split('=')[1]
-  );
-
   const handleError = (error: AxiosError<ApiErrorResponse>) => {
     const message =
       error.response?.data?.message ?? "We could not load the profile.";
@@ -60,11 +50,6 @@ export default function Profile({ user }: ProfileProps) {
   };
 
   const getUser = async () => {
-    if (!token) {
-      setIsLoaded(true);
-      return;
-    }
-
     try {
       const urlParams = new URLSearchParams(window.location.search);
       const requestedUserId = urlParams.get("id");
@@ -80,6 +65,7 @@ export default function Profile({ user }: ProfileProps) {
       setIsLoaded(true);
     } catch (error) {
       handleError(error as AxiosError<ApiErrorResponse>);
+      setIsLoaded(true);
     }
   };
 
@@ -88,18 +74,6 @@ export default function Profile({ user }: ProfileProps) {
       void getUser();
     }
   }, [isLoaded]);
-
-  if (!token) {
-    return (
-      <section className={styles["profile"]}>
-        <div className="auto__container">
-          <div className={styles["profile__inner"]}>
-            <p>Please sign in to view profiles.</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   if (!isLoaded || !userData) {
     return (

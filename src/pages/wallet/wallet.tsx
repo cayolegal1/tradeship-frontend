@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { AxiosError } from "axios";
-import { apiClient, TOKEN_STORAGE_KEY } from "@/services/api/client";
+import { apiClient } from "@/services/api/client";
 import { AnimatePresence } from "framer-motion";
 
 import Balance from "./components/balance";
@@ -22,22 +22,6 @@ interface ApiErrorResponse {
   message?: string;
 }
 
-const getStoredToken = (): string | null => {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  const localToken = window.localStorage.getItem(TOKEN_STORAGE_KEY);
-  if (localToken) {
-    return localToken;
-  }
-
-  const cookie = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("token="));
-
-  return cookie ? cookie.split("=")[1] : null;
-};
 export default function Wallet() {
   const [modal, setModal] = useState<ModalState>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -49,13 +33,6 @@ export default function Wallet() {
   };
 
   const getWalletData = async () => {
-    const token = getStoredToken();
-
-    if (!token) {
-      setIsLoaded(true);
-      return;
-    }
-
     try {
       const response = await apiClient.get<WalletResponse>(
         "/api/payment/wallet/"
@@ -63,13 +40,12 @@ export default function Wallet() {
 
       const results = response.data.results ?? [];
       setWalletData(results);
-      const history = results.flatMap(
-        (wallet) => wallet.historyTransactions ?? []
-      );
+      const history = results.flatMap((wallet) => wallet.historyTransactions ?? []);
       setTransactions(history);
       setIsLoaded(true);
     } catch (error) {
       handleError(error as AxiosError<ApiErrorResponse>);
+      setIsLoaded(true);
     }
   };
 

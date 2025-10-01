@@ -7,19 +7,17 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 // third party
-import axios from 'axios';
+import { apiClient } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 // project import
-import { SERVER_URL } from '../../../config';
 
 
 export default function PostItem() {
   const navigate = useNavigate();
-  const token = document.cookie.split('; ').find(row => row.startsWith('token='));
-  
+
   const [categoryList, setCategoryList] = useState([]);
 
   const [title, setTitle] = useState("");
@@ -68,11 +66,7 @@ export default function PostItem() {
 
 
   const getCategories = () => {
-    axios.get(SERVER_URL + '/api/trade/interests/', {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+    apiClient.get('/api/trade/interests/')
       .then((response) => {
         const categories = response.data.map((category) => ({
           id: category.id,
@@ -107,7 +101,7 @@ export default function PostItem() {
   }, []);
 
   const postItemFunction = () => {
-    axios.post(`${SERVER_URL}/api/trade/items`, {
+    apiClient.post('/api/trade/items', {
       name: title,
       description: description,
       price: estimatedValue,
@@ -117,11 +111,6 @@ export default function PostItem() {
       },
       images: images,
       interests: selectedTags,
-    }, {
-      headers: {
-        'Authorization': `Bearer ${token?.split('=')[1]}`,
-        'Content-Type': 'application/json'
-      }
     })
     .then(response => {
       toast.success("Item posted successfully!", {

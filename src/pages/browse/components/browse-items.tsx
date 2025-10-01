@@ -66,10 +66,6 @@ export default function BrowseItems() {
   const [currentPage, setCurrentPage] = useState(1);
   const [allItemsLoaded, setAllItemsLoaded] = useState(false);
   const [itemsPerPage] = useState(50);
-  const token = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("token="));
-
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(categoryList[0]);
   const [selectedTradeType, setSelectedTradeType] = useState(tradeTypeList[0]);

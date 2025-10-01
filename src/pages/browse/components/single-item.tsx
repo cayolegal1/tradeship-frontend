@@ -29,7 +29,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // project import
-import { SERVER_URL } from "../../../config";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 
 export default function SingleItem() {
@@ -64,18 +63,8 @@ export default function SingleItem() {
   const [loaded, setLoaded] = useState(false);
   const [itemData, setItemData] = useState(null);
 
-  const token = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("token="));
-
   const getItem = (id) => {
-    apiClient
-      .get(SERVER_URL + "/api/trade/items/" + id, {
-        headers: {
-          Authorization: `Bearer ${token?.split("=")[1]}`,
-          "Content-Type": "application/json",
-        },
-      })
+    apiClient.get(`/api/trade/items/${id}`)
       .then((response) => {
         setItemData(response.data);
 
@@ -102,17 +91,7 @@ export default function SingleItem() {
   }, [item_id]);
 
   const favoriteItem = () => {
-    apiClient
-      .post(
-        SERVER_URL + "/api/trade/items/" + item_id + "/favorite",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token?.split("=")[1]}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+    apiClient.post(`/api/trade/items/${item_id}/favorite`, {})
       .then((response) => {
         if (response.data.message == "Item unfavorited") {
           itemData.favorite_count -= 1;

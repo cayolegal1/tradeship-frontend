@@ -2,7 +2,7 @@ import type { ChangeEvent } from "react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { isAxiosError, type AxiosError } from "axios";
-import { apiClient, TOKEN_STORAGE_KEY } from "@/services/api/client";
+import { apiClient } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,7 +13,7 @@ import { CustomButton } from "../../components/custom-button/custom-button";
 import { FormField } from "../../components/form-field/form-field";
 import { PassField } from "../../components/pass-field/pass-field";
 
-import { AuthResponseDto } from "@/types";
+import { AuthResponseDto, UserProfile } from "@/types";
 
 interface ApiErrorResponse {
   message?: string;
@@ -55,7 +55,7 @@ export default function SignIn() {
 
     try {
       const response = await apiClient.post<AuthResponseDto>(
-        `${SERVER_URL}/api/token/`,
+        "/api/token/",
         {
           email: userEmail,
           password: userPassword,
@@ -63,8 +63,6 @@ export default function SignIn() {
       );
 
       if (response.status === 200 && response.data.tokens) {
-        window.localStorage.setItem(TOKEN_STORAGE_KEY, response.data.tokens.accessToken);
-        document.cookie = `token=${response.data.tokens.accessToken};max-age=2592000;path=/`;
         window.location.href = "/browse";
         return;
       }
@@ -87,13 +85,24 @@ export default function SignIn() {
   };
 
   useEffect(() => {
-    const token = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("token="));
+    let isMounted = true;
 
-    if (token) {
-      window.location.href = "/browse";
-    }
+    const checkSession = async () => {
+      try {
+        await apiClient.get<UserProfile>("/api/auth/me/");
+        if (isMounted) {
+          window.location.href = "/browse";
+        }
+      } catch {
+        // ignore unauthenticated state
+      }
+    };
+
+    void checkSession();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
