@@ -44,7 +44,7 @@ export default function SignUp() {
 
     const checkSession = async () => {
       try {
-        await apiClient.get<UserProfile>("/api/auth/me/");
+        await apiClient.get<UserProfile>("/api/auth/user/");
         if (isMounted) {
           window.location.href = "/browse";
         }

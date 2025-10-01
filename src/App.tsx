@@ -46,7 +46,7 @@ const normaliseNotifications = (
 
 function App() {
   const location = useLocation();
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(true);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
@@ -79,7 +79,7 @@ function App() {
 
   const getUserData = useCallback(async () => {
     try {
-      const response = await apiClient.get<UserProfile>("/api/auth/me/");
+      const response = await apiClient.get<UserProfile>("/api/auth/user/");
 
       setUser(response.data);
       setIsLoaded(true);
@@ -101,10 +101,10 @@ function App() {
     }
   }, [handleApiError]);
 
-  useEffect(() => {
-    void getUserData();
-    void getNotifications();
-  }, [getNotifications, getUserData]);
+  // useEffect(() => {
+  //   void getUserData();
+  //   void getNotifications();
+  // }, [getNotifications, getUserData]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

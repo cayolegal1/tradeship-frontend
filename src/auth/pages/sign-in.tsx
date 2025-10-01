@@ -55,7 +55,7 @@ export default function SignIn() {
 
     try {
       const response = await apiClient.post<AuthResponseDto>(
-        "/api/token/",
+        "/api/auth/login/",
         {
           email: userEmail,
           password: userPassword,
@@ -63,6 +63,7 @@ export default function SignIn() {
       );
 
       if (response.status === 200 && response.data.tokens) {
+        document.cookie = `token=${response.data.tokens.accessToken};max-age=2592000;path=/;SameSite=Strict;Secure`;
         window.location.href = "/browse";
         return;
       }
@@ -89,7 +90,7 @@ export default function SignIn() {
 
     const checkSession = async () => {
       try {
-        await apiClient.get<UserProfile>("/api/auth/me/");
+        await apiClient.get<UserProfile>("/api/auth/user/");
         if (isMounted) {
           window.location.href = "/browse";
         }
