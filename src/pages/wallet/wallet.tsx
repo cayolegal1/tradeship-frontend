@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import axios, { type AxiosError } from "axios";
+import type { AxiosError } from "axios";
+import { apiClient, TOKEN_STORAGE_KEY } from "@/services/api/client";
 import { AnimatePresence } from "framer-motion";
 
 import Balance from "./components/balance";
@@ -10,7 +11,7 @@ import DepositFunds from "./components/deposit-funds";
 import WithdrawFunds from "./components/withdraw-funds";
 import styles from "./wallet.module.scss";
 import { Modal } from "../../components/modal/modal";
-import { SERVER_URL } from "../../config";
+
 import type { ModalState, WalletAccount, WalletTransaction } from "@/types";
 
 interface WalletResponse {
@@ -21,35 +22,43 @@ interface ApiErrorResponse {
   message?: string;
 }
 
+const getStoredToken = (): string | null => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const localToken = window.localStorage.getItem(TOKEN_STORAGE_KEY);
+  if (localToken) {
+    return localToken;
+  }
+
+  const cookie = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("token="));
+
+  return cookie ? cookie.split("=")[1] : null;
+};
 export default function Wallet() {
   const [modal, setModal] = useState<ModalState>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [walletData, setWalletData] = useState<WalletAccount[]>([]);
   const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
 
-  const token = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("token="))
-    ?.split("=")[1];
-
   const handleError = (error: AxiosError<ApiErrorResponse>) => {
     console.error("Error fetching wallet data:", error);
   };
 
   const getWalletData = async () => {
+    const token = getStoredToken();
+
     if (!token) {
+      setIsLoaded(true);
       return;
     }
 
     try {
-      const response = await axios.get<WalletResponse>(
-        `${SERVER_URL}/api/payment/wallet/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+      const response = await apiClient.get<WalletResponse>(
+        "/api/payment/wallet/"
       );
 
       const results = response.data.results ?? [];
@@ -107,3 +116,6 @@ export default function Wallet() {
     </>
   );
 }
+
+
+

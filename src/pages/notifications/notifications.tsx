@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useMemo, useState } from "react";
-import axios, { type AxiosError } from "axios";
+import type { AxiosError } from "axios";
+import { apiClient, TOKEN_STORAGE_KEY } from "@/services/api/client";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -8,7 +9,6 @@ import styles from "./notifications.module.scss";
 import Head from "./components/head";
 import Filter, { type FilterId } from "./components/filter";
 import Main from "./components/main";
-import { SERVER_URL } from "../../config";
 import type { Notification } from "@/types";
 
 interface NotificationsProps {
@@ -27,6 +27,15 @@ export default function Notifications({
   const [activeFilter, setActiveFilter] = useState<FilterId>("all");
 
   const token = useMemo(() => {
+    if (typeof window === "undefined") {
+      return null;
+    }
+
+    const localToken = window.localStorage.getItem(TOKEN_STORAGE_KEY);
+    if (localToken) {
+      return localToken;
+    }
+
     const cookie = document.cookie
       .split("; ")
       .find((row) => row.startsWith("token="));
@@ -55,8 +64,8 @@ export default function Notifications({
     }
 
     try {
-      await axios.put(
-        `${SERVER_URL}/api/notifications/mark-as-read`,
+      await apiClient.put(
+        "/api/notifications/mark-as-read",
         {
           notification_id: "all",
         },

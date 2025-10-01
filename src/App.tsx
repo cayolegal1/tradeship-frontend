@@ -1,7 +1,8 @@
 import type { CSSProperties } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import axios, { type AxiosError } from "axios";
+import type { AxiosError } from "axios";
+import { apiClient } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -18,7 +19,7 @@ import Wallet from "./pages/wallet/wallet";
 import MyTrades from "./pages/my-trades/my-trades";
 import Profile from "./pages/profile/profile";
 import Notifications from "./pages/notifications/notifications";
-import { SERVER_URL } from "./config";
+
 import type { Notification, PaginatedResponse, UserProfile } from "./types";
 
 interface ApiErrorResponse {
@@ -93,12 +94,7 @@ function App() {
     }
 
     try {
-      const response = await axios.get<UserProfile>(`${SERVER_URL}/api/auth/me/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await apiClient.get<UserProfile>("/api/auth/me/");
 
       setUser(response.data);
       setIsLoaded(true);
@@ -113,14 +109,8 @@ function App() {
     }
 
     try {
-      const response = await axios.get<PaginatedResponse<NotificationApiModel>>(
-        `${SERVER_URL}/api/notifications/notifications/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+      const response = await apiClient.get<PaginatedResponse<NotificationApiModel>>(
+        "/api/notifications/notifications/"
       );
 
       setNotifications(normaliseNotifications(response.data.results));
@@ -185,3 +175,5 @@ function App() {
 }
 
 export default App;
+
+

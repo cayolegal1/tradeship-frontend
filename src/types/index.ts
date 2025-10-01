@@ -62,6 +62,64 @@ export interface UserProfile extends UserSummary {
   average_price?: number;
 }
 
+export interface UserResponseDto {
+  id: string;
+  email: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  isActive: boolean;
+  agreesToTerms: boolean;
+  termsAgreedAt?: Date;
+  termsVersion: string;
+  profileCompleted: boolean;
+  dateJoined: Date;
+  lastLogin?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserProfileResponseDto {
+  id: string;
+  userId: string;
+  phoneNumber?: string;
+  dateOfBirth?: Date;
+  bio?: string;
+  avatar?: string;
+  emailNotifications: boolean;
+  marketingEmails: boolean;
+  city?: string;
+  state?: string;
+  country: string;
+  traderSince: Date;
+  tradingRating: number;
+  totalTrades: number;
+  successfulTrades: number;
+  isVerifiedTrader: boolean;
+  traderTier: string;
+  specialties?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  successRate: number;
+  traderStatus: string;
+}
+
+export interface UserWithProfileResponseDto extends UserResponseDto {
+  profile?: UserProfileResponseDto;
+}
+
+export interface AuthTokensResponseDto {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface AuthResponseDto {
+  user: UserWithProfileResponseDto;
+  tokens: AuthTokensResponseDto;
+  message: string;
+}
+
 export type ModalState = "deposit" | "withdraw" | null;
 
 export interface WalletTransaction {

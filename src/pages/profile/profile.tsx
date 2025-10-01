@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import axios, { type AxiosError } from "axios";
+import type { AxiosError } from "axios";
+import { apiClient, TOKEN_STORAGE_KEY } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -32,10 +33,15 @@ export default function Profile({ user }: ProfileProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [userData, setUserData] = useState<UserProfile | null>(null);
 
-  const token = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("token="))
-    ?.split("=")[1];
+  const token = (
+    typeof window === "undefined"
+      ? null
+      : window.localStorage.getItem(TOKEN_STORAGE_KEY) ??
+        document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('token='))
+          ?.split('=')[1]
+  );
 
   const handleError = (error: AxiosError<ApiErrorResponse>) => {
     const message =
@@ -55,6 +61,7 @@ export default function Profile({ user }: ProfileProps) {
 
   const getUser = async () => {
     if (!token) {
+      setIsLoaded(true);
       return;
     }
 
@@ -62,16 +69,12 @@ export default function Profile({ user }: ProfileProps) {
       const urlParams = new URLSearchParams(window.location.search);
       const requestedUserId = urlParams.get("id");
       const activeUserId = user?.id ? String(user.id) : null;
-      const endpoint = requestedUserId && requestedUserId !== activeUserId
-        ? `${SERVER_URL}/api/auth/profiles/user/${requestedUserId}/`
-        : `${SERVER_URL}/api/auth/me/`;
+      const endpoint =
+        requestedUserId && requestedUserId !== activeUserId
+          ? `/api/auth/profiles/user/${requestedUserId}/`
+          : "/api/auth/me/";
 
-      const response = await axios.get<UserProfile>(endpoint, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await apiClient.get<UserProfile>(endpoint);
 
       setUserData(response.data);
       setIsLoaded(true);
@@ -143,3 +146,4 @@ export default function Profile({ user }: ProfileProps) {
     </section>
   );
 }
+

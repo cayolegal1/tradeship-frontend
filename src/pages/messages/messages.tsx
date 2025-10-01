@@ -16,7 +16,7 @@ import { CustomButton } from "../../components/custom-button/custom-button";
 import { messageList } from "../../constants/modul";
 
 // third party
-import axios from 'axios';
+import { apiClient, TOKEN_STORAGE_KEY } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -28,8 +28,6 @@ import { m } from "framer-motion";
 
 export default function Messages() {
   const [loaded, setLoaded] = useState(false);
-  const token = document.cookie.split('; ').find(row => row.startsWith('token='));
-
   const [sendingMessage, setSendingMessage] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -55,13 +53,13 @@ export default function Messages() {
     getChatMessages(id);
   };
 
+  const logout = () => {
+    window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    navigate("/auth/");
+  };
   const getChats = () => {
-    axios.get(SERVER_URL + '/api/notifications/', {
-      headers: {
-        'Authorization': `Bearer ${token?.split('=')[1]}`,
-        'Content-Type': 'application/json'
-      }
-    })
+    apiClient.get('/api/notifications/')
       .then((response) => {
         setChats(response.data);
         setFilteredChats(response.data);
@@ -93,12 +91,7 @@ export default function Messages() {
   const getChatMessages = (chatId) => {
     setLoadingSelectedChatMessages(true);
 
-    axios.get(SERVER_URL + `/api/chats/${chatId}/messages`, {
-      headers: {
-        'Authorization': `Bearer ${token?.split('=')[1]}`,
-        'Content-Type': 'application/json'
-      }
-    })
+    apiClient.get(`/api/chats/${chatId}/messages`)
       .then((response) => {
         setSelectedChatMessages(response.data);
 
@@ -129,13 +122,8 @@ export default function Messages() {
   const sendMessage = (chatId, message) => {
     setSendingMessage(true);
 
-    axios.post(SERVER_URL + `/api/chats/${chatId}/messages`, {
+    apiClient.post(`/api/chats/${chatId}/messages`, {
       message
-    }, {
-      headers: {
-        'Authorization': `Bearer ${token?.split('=')[1]}`,
-        'Content-Type': 'application/json'
-      }
     })
       .then((response) => {
 
@@ -554,3 +542,4 @@ const Item = (props) => {
     </div>
   );
 };
+

@@ -23,7 +23,7 @@ import StartChat from "./start-chat";
 import { AnimatePresence } from "framer-motion";
 
 // third party
-import axios from "axios";
+import { apiClient } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -69,7 +69,7 @@ export default function SingleItem() {
     .find((row) => row.startsWith("token="));
 
   const getItem = (id) => {
-    axios
+    apiClient
       .get(SERVER_URL + "/api/trade/items/" + id, {
         headers: {
           Authorization: `Bearer ${token?.split("=")[1]}`,
@@ -102,7 +102,7 @@ export default function SingleItem() {
   }, [item_id]);
 
   const favoriteItem = () => {
-    axios
+    apiClient
       .post(
         SERVER_URL + "/api/trade/items/" + item_id + "/favorite",
         {},

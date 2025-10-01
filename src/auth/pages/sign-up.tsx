@@ -1,7 +1,8 @@
 import type { ChangeEvent } from "react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios, { type AxiosError } from "axios";
+import { isAxiosError, type AxiosError } from "axios";
+import { apiClient, TOKEN_STORAGE_KEY } from "@/services/api/client";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -16,7 +17,7 @@ import styles from "../auth.module.scss";
 import { CustomButton } from "@/components/custom-button/custom-button";
 import { FormField } from "@/components/form-field/form-field";
 import { PassField } from "@/components/pass-field/pass-field";
-import { SERVER_URL } from "../../config";
+
 
 interface RegisterResponse {
   token: string;
@@ -47,7 +48,7 @@ export default function SignUp() {
 
   const handleError = (error: AxiosError<ApiErrorResponse> | Error) => {
     const message =
-      axios.isAxiosError(error)
+      isAxiosError(error)
         ? error.response?.data?.message ?? "Error occurred. Please try again later."
         : "Error occurred. Please try again later.";
 
@@ -91,7 +92,7 @@ export default function SignUp() {
     document.cookie = `emailForSignUp=${email};max-age=2592000;path=/`;
 
     try {
-      const response = await axios.post<RegisterResponse>(
+      const response = await apiClient.post<RegisterResponse>(
         `${SERVER_URL}/api/auth/register/`,
         {
           username,
@@ -105,6 +106,7 @@ export default function SignUp() {
       );
 
       if (response.status === 201 && response.data.token) {
+        window.localStorage.setItem(TOKEN_STORAGE_KEY, response.data.token);
         document.cookie = `token=${response.data.token};max-age=2592000;path=/`;
         navigate("/browse");
         return;
@@ -221,3 +223,4 @@ export default function SignUp() {
     </div>
   );
 }
+

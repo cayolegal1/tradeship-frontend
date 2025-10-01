@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import CustomSelect from "@/components/custom-select/custom-select";
 
 // third party
-import axios from "axios";
+import { apiClient } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -80,7 +80,7 @@ export default function BrowseItems() {
   const getItems = (page) => {
     setLoadingItems(true);
 
-    axios
+    apiClient
       .get(
         SERVER_URL +
           "/api/trade/items/?page=" +
@@ -129,7 +129,7 @@ export default function BrowseItems() {
   };
 
   const getCategories = () => {
-    axios
+    apiClient
       .get(SERVER_URL + "/api/trade/interests/", {
         headers: {
           "Content-Type": "application/json",
