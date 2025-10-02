@@ -19,10 +19,61 @@ import { FormField } from "@/components/form-field/form-field";
 import { PassField } from "@/components/pass-field/pass-field";
 
 
-interface RegisterResponse {
-  token: string;
-  message?: string;
+export interface RegisterResponse {
+    user:    User;
+    tokens:  Tokens;
+    message: string;
 }
+
+export interface Tokens {
+    accessToken:  string;
+    refreshToken: string;
+}
+
+export interface User {
+    id:               string;
+    email:            string;
+    username:         string;
+    firstName:        string;
+    lastName:         string;
+    password:         string;
+    isActive:         boolean;
+    agreesToTerms:    boolean;
+    termsAgreedAt:    Date;
+    termsVersion:     string;
+    profileCompleted: boolean;
+    dateJoined:       Date;
+    lastLogin:        null;
+    createdAt:        Date;
+    updatedAt:        Date;
+    profile:          Profile;
+    fullName:         string;
+}
+
+export interface Profile {
+    id:                 string;
+    userId:             string;
+    phoneNumber:        null;
+    dateOfBirth:        null;
+    bio:                null;
+    avatar:             null;
+    emailNotifications: boolean;
+    marketingEmails:    boolean;
+    city:               null;
+    state:              null;
+    country:            string;
+    traderSince:        Date;
+    tradingRating:      string;
+    totalTrades:        number;
+    successfulTrades:   number;
+    isVerifiedTrader:   boolean;
+    traderTier:         string;
+    specialties:        null;
+    createdAt:          Date;
+    updatedAt:          Date;
+    interests:          any[];
+}
+
 
 interface ApiErrorResponse {
   message?: string;
@@ -39,26 +90,6 @@ export default function SignUp() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [agreesToTerms, setAgreesToTerms] = useState(false);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const checkSession = async () => {
-      try {
-        await apiClient.get<UserProfile>("/api/auth/user/");
-        if (isMounted) {
-          window.location.href = "/browse";
-        }
-      } catch {
-        // unauthenticated users can continue sign-up
-      }
-    };
-
-    void checkSession();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const handleError = (error: AxiosError<ApiErrorResponse> | Error) => {
     const message =
@@ -119,7 +150,7 @@ export default function SignUp() {
         }
       );
 
-      if (response.status === 201 && response.data.token) {
+      if (response.status === 201 && response.data.tokens) {
         navigate("/browse");
         return;
       }
