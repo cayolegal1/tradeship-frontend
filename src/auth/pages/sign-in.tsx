@@ -1,6 +1,6 @@
 import type { ChangeEvent } from "react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { isAxiosError, type AxiosError } from "axios";
 import { apiClient } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
@@ -23,6 +23,7 @@ export default function SignIn() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -64,7 +65,7 @@ export default function SignIn() {
 
       if (response.status === 200 && response.data.tokens) {
         document.cookie = `token=${response.data.tokens.accessToken};max-age=2592000;path=/;SameSite=Strict;Secure`;
-        window.location.href = "/browse";
+        navigate("/browse");
         return;
       }
 
@@ -92,7 +93,7 @@ export default function SignIn() {
       try {
         await apiClient.get<UserProfile>("/api/auth/user/");
         if (isMounted) {
-          window.location.href = "/browse";
+          navigate("/browse");
         }
       } catch {
         // ignore unauthenticated state

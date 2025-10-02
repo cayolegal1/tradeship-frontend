@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import type { AxiosError } from "axios";
 import { apiClient } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
@@ -49,9 +49,10 @@ function App() {
   const [isLoaded, setIsLoaded] = useState(true);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const navigate = useNavigate();
 
   const logout = useCallback(() => {
-    window.location.href = "/auth/";
+    navigate("/auth/", { replace: true,  });
   }, []);
 
   const handleApiError = useCallback(
