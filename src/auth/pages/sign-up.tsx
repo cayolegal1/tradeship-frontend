@@ -110,12 +110,12 @@ export default function SignUp() {
         "/api/auth/register/",
         {
           username,
-          first_name: firstName,
-          last_name: lastName,
+          firstName,
+          lastName,
           email,
           password,
-          password_confirm: passwordConfirm,
-          agrees_to_terms: agreesToTerms ? 1 : 0,
+          passwordConfirm,
+          agreesToTerms: agreesToTerms ? 1 : 0,
         }
       );
 
