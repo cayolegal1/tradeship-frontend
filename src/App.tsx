@@ -102,10 +102,10 @@ function App() {
     }
   }, [handleApiError]);
 
-  // useEffect(() => {
-  //   void getUserData();
-  //   void getNotifications();
-  // }, [getNotifications, getUserData]);
+  useEffect(() => {
+    getUserData();
+    getNotifications();
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);

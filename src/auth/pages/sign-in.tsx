@@ -63,8 +63,9 @@ export default function SignIn() {
         }
       );
 
-      if (response.status === 200 && response.data.tokens) {
-        document.cookie = `token=${response.data.tokens.accessToken};max-age=2592000;path=/;SameSite=Strict;Secure`;
+      const isLoginSuccessful = response.status === 200 && response.data.tokens?.accessToken;
+
+      if (isLoginSuccessful) {
         navigate("/browse");
         return;
       }
