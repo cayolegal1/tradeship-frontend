@@ -98,12 +98,9 @@ export default function BrowseItems() {
         }
       )
       .then((response) => {
-        console.log({ response });
-        //setItems(response.data);
-        // Add to items array
-        setItems((prevItems) => [...prevItems, ...response.data.results]);
-        // If the response data is less than itemsPerPage, it means there are no more items to load
-        if (response.data.results.length < itemsPerPage) {
+        const { results } = response.data;
+        setItems((prevItems) => [...prevItems, ...results]);
+        if (results.length < itemsPerPage) {
           setAllItemsLoaded(true);
         }
 
@@ -132,15 +129,14 @@ export default function BrowseItems() {
         },
       })
       .then((response) => {
-        console.log({ response });
-        const categories = response.data.results.map((category) => ({
+        const categories = response.data.map((category) => ({
           id: category.id,
           value: /*category.icon + " " + */ category.name,
         }));
+
         setCategoryList((prevCategories) => [...prevCategories, ...categories]);
       })
       .catch((error) => {
-        console.log(error);
         toast.error(error, {
           position: "top-right",
           autoClose: 5000,

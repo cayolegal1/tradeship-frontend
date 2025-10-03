@@ -1,6 +1,12 @@
 import type { CSSProperties } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import type { AxiosError } from "axios";
 import { apiClient } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
@@ -52,7 +58,7 @@ function App() {
   const navigate = useNavigate();
 
   const logout = useCallback(() => {
-    navigate("/auth/", { replace: true,  });
+    navigate("/auth/", { replace: true });
   }, []);
 
   const handleApiError = useCallback(
@@ -92,9 +98,9 @@ function App() {
 
   const getNotifications = useCallback(async () => {
     try {
-      const response = await apiClient.get<PaginatedResponse<NotificationApiModel>>(
-        "/api/notifications/notifications/"
-      );
+      const response = await apiClient.get<
+        PaginatedResponse<NotificationApiModel>
+      >("/api/notifications/notifications/");
 
       setNotifications(normaliseNotifications(response.data.results));
     } catch (error) {
@@ -127,7 +133,7 @@ function App() {
   return (
     <main className="main">
       <ToastContainer />
-      <Header user={user} notifications={notifications} />
+      <Header user={user} notifications={notifications} logout={logout} />
       <Routes>
         <Route path="" element={<Landing />} />
         <Route path="/messages" element={<Messages />} />
@@ -154,5 +160,3 @@ function App() {
 }
 
 export default App;
-
-

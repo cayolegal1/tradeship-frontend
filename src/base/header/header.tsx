@@ -12,9 +12,10 @@ import type { Notification, UserProfile } from "@/types";
 interface HeaderProps {
   user: UserProfile | null;
   notifications: Notification[];
+  logout: () => void;
 }
 
-export default function Header({ user, notifications }: HeaderProps) {
+export default function Header({ user, notifications, logout }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
   const [activeLink, setActiveLink] = useState("home");
@@ -87,7 +88,10 @@ export default function Header({ user, notifications }: HeaderProps) {
           </Link>
           <div className={styles["header__inner-side"]}>
             <nav
-              className={classNames(styles["nav"], menuOpen && styles["active"])}
+              className={classNames(
+                styles["nav"],
+                menuOpen && styles["active"]
+              )}
               onClick={closeMenuIfOutside}
             >
               <div className={styles["nav__inner"]}>
@@ -140,6 +144,9 @@ export default function Header({ user, notifications }: HeaderProps) {
                         />
                       </div>
                     </button>
+                    <div className={styles["nav__inner-buttons"]}>
+                      <CustomButton title="Logout" onClick={logout} />
+                    </div>
                   </>
                 ) : (
                   <div className={styles["nav__inner-buttons"]}>
@@ -204,7 +211,10 @@ export default function Header({ user, notifications }: HeaderProps) {
             )}
             <button
               type="button"
-              className={classNames(styles["burger"], menuOpen && styles["active"])}
+              className={classNames(
+                styles["burger"],
+                menuOpen && styles["active"]
+              )}
               onClick={() => setMenuOpen((prev) => !prev)}
               style={{ display: "inline-block" }}
             >
