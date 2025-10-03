@@ -144,8 +144,14 @@ export default function Header({ user, notifications, logout }: HeaderProps) {
                         />
                       </div>
                     </button>
-                    <div className={styles["nav__inner-buttons"]}>
-                      <CustomButton title="Logout" onClick={logout} />
+                    <div
+                      className={`${styles["nav__inner-buttons"]} ${styles["logout"]}`}
+                    >
+                      <CustomButton
+                        data-role="logout"
+                        title="Logout"
+                        onClick={logout}
+                      />
                     </div>
                   </>
                 ) : (

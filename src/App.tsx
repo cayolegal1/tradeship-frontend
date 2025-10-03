@@ -57,9 +57,21 @@ function App() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const navigate = useNavigate();
 
-  const logout = useCallback(() => {
-    navigate("/auth/", { replace: true });
-  }, []);
+  const logout = async () => {
+    if (!user) {
+      navigate("/auth/", { replace: true });
+      return;
+    }
+
+    try {
+      const response = await apiClient.post<UserProfile>("/api/auth/logout/");
+      if (response.status === 200) {
+        navigate("/auth/", { replace: true });
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   const handleApiError = useCallback(
     (error: AxiosError<ApiErrorResponse>) => {

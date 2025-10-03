@@ -37,6 +37,7 @@
     }
   }
 }
+
 .nav {
   margin-top: 15px;
   &__inner {
@@ -54,7 +55,7 @@
         font-size: 14px;
         line-height: 20px;
         border: 1px solid var(--primary) !important;
-        &:first-child {
+        &:not([data-role="logout"]):first-child {
           color: var(--primary) !important;
           &:hover {
             opacity: 1;
@@ -69,6 +70,10 @@
             background-color: var(--white);
             color: var(--primary);
           }
+        }
+
+        &[data-role="logout"] {
+          margin-left: 1rem;
         }
       }
     }
