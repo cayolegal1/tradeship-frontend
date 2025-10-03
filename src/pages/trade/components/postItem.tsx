@@ -89,11 +89,6 @@ export default function PostItem() {
   };
 
   useEffect(() => {
-    if (categoryList.length > 1) {
-      // If categories are already loaded, no need to fetch again
-      return;
-    }
-
     getCategories();
   }, []);
 
