@@ -10,10 +10,9 @@ import { useNavigate } from "react-router-dom";
 import { apiClient } from "@/services/api/client";
 import BarLoader from "react-spinners/BarLoader";
 import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 // project import
-
 
 export default function PostItem() {
   const navigate = useNavigate();
@@ -24,7 +23,7 @@ export default function PostItem() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [description, setDescription] = useState("");
   const [estimatedValue, setEstimatedValue] = useState("");
-  
+
   const [shippingWeight, setShippingWeight] = useState("");
   const [shippingDimensions, setShippingDimensions] = useState({
     length: "",
@@ -64,16 +63,16 @@ export default function PostItem() {
     },
   ];
 
-
   const getCategories = () => {
-    apiClient.get('/api/trade/interests/')
+    apiClient
+      .get("/api/trade/interests/")
       .then((response) => {
         const categories = response.data.map((category) => ({
           id: category.id,
-          value: category.icon + " " + category.name,
+          value: `${category.icon || ""} ${category.name}`,
         }));
-        setCategoryList((prevCategories) => [...prevCategories, ...categories]);
 
+        setCategoryList(categories);
       })
       .catch((error) => {
         toast.error(error, {
@@ -87,67 +86,63 @@ export default function PostItem() {
           theme: "light",
         });
       });
-  }
+  };
 
   useEffect(() => {
-
     if (categoryList.length > 1) {
       // If categories are already loaded, no need to fetch again
       return;
     }
 
     getCategories();
-
   }, []);
 
   const postItemFunction = () => {
-    apiClient.post('/api/trade/items', {
-      name: title,
-      description: description,
-      price: estimatedValue,
-      shipping: {
-        weight: shippingWeight,
-        dimensions: shippingDimensions,
-      },
-      images: images,
-      interests: selectedTags,
-    })
-    .then(response => {
-      toast.success("Item posted successfully!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+    apiClient
+      .post("/api/trade/items", {
+        name: title,
+        description: description,
+        price: estimatedValue,
+        shipping: {
+          weight: shippingWeight,
+          dimensions: shippingDimensions,
+        },
+        images: images,
+        interests: selectedTags,
+      })
+      .then((response) => {
+        toast.success("Item posted successfully!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
 
-      // Redirect to the single item page
-      navigate(`/browse/single-item?id=${response.data.item_id}`);
-
-    })
-    .catch(error => {
-      toast.error(error, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+        // Redirect to the single item page
+        navigate(`/browse/single-item?id=${response.data.item_id}`);
+      })
+      .catch((error) => {
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
       });
-    });
-    
-  }
+  };
 
   return (
     <section className={styles["base"]}>
       <div className="auto__container">
         <div className={styles["steps__inner"]}>
-
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -156,25 +151,18 @@ export default function PostItem() {
           >
             <PostDetails
               categoryList={categoryList}
-              
               title={title}
               setTitle={setTitle}
-
               selectedTags={selectedTags}
               setSelectedTags={setSelectedTags}
-              
               description={description}
               setDescription={setDescription}
-              
               estimatedValue={estimatedValue}
               setEstimatedValue={setEstimatedValue}
-              
               shippingWeight={shippingWeight}
               setShippingWeight={setShippingWeight}
-              
               shippingDimensions={shippingDimensions}
               setShippingDimensions={setShippingDimensions}
-              
               images={images}
               setImages={setImages}
             />
@@ -186,15 +174,28 @@ export default function PostItem() {
             icon={chevronRight}
             title="Post Item"
             styleType="primary"
-            disabled={!(title && description && estimatedValue && shippingWeight && images.length > 0)}
+            disabled={
+              !(
+                title &&
+                description &&
+                estimatedValue &&
+                shippingWeight &&
+                images.length > 0
+              )
+            }
             onClick={postItemFunction}
           />
-          {
-            !(title && description && estimatedValue && shippingWeight && images.length > 0) &&
-            <p
-              style={{ color: "red", marginTop: "10px" }}
-            >Please fill in all fields before posting your item.</p>
-          }
+          {!(
+            title &&
+            description &&
+            estimatedValue &&
+            shippingWeight &&
+            images.length > 0
+          ) && (
+            <p style={{ color: "red", marginTop: "10px" }}>
+              Please fill in all fields before posting your item.
+            </p>
+          )}
         </div>
       </div>
     </section>
