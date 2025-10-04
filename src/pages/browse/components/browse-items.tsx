@@ -308,14 +308,7 @@ const BrowseItem = (props) => {
       className={styles["browseItem"]}
     >
       <div className={styles["browseItem__image"]}>
-        <img
-          src={
-            SERVER_URL +
-            "/item-images/" +
-            (props.preview_image_path || "").trim()
-          }
-          alt="placeholder"
-        />
+        <img src={props.images[0]?.url} alt="placeholder" />
       </div>
       <div className={styles["browseItem__content"]}>
         <div className={styles["browseItem__top"]}>
