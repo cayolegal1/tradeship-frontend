@@ -74,6 +74,8 @@ export default function Header({ user, notifications, logout }: HeaderProps) {
   const userAvatar = user?.avatar ?? user?.profile_pic ?? "default.png";
   const unreadCount = unreadNotifications.length;
 
+  console.log(user);
+
   return (
     <header
       className={classNames(styles["header"], {

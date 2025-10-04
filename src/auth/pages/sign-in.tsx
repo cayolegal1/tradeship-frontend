@@ -63,7 +63,8 @@ export default function SignIn() {
         }
       );
 
-      const isLoginSuccessful = response.status === 200 && response.data.tokens?.accessToken;
+      const isLoginSuccessful =
+        response.status === 200 && response.data.tokens?.accessToken;
 
       if (isLoginSuccessful) {
         navigate("/browse");
@@ -86,27 +87,6 @@ export default function SignIn() {
       setIsSubmitting(false);
     }
   };
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const checkSession = async () => {
-      try {
-        await apiClient.get<UserProfile>("/api/auth/user/");
-        if (isMounted) {
-          navigate("/browse");
-        }
-      } catch {
-        // ignore unauthenticated state
-      }
-    };
-
-    void checkSession();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   return (
     <div className={styles.form}>
@@ -159,5 +139,3 @@ export default function SignIn() {
     </div>
   );
 }
-
-

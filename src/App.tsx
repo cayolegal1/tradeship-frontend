@@ -66,6 +66,7 @@ function App() {
     try {
       const response = await apiClient.post<UserProfile>("/api/auth/logout/");
       if (response.status === 200) {
+        setUser(null);
         navigate("/auth/", { replace: true });
       }
     } catch (error) {
@@ -74,8 +75,8 @@ function App() {
   };
 
   const handleApiError = useCallback(
-    (error: AxiosError<ApiErrorResponse>) => {
-      if (error.response?.status === 401) {
+    (error: AxiosError<ApiErrorResponse>, showToast = true) => {
+      if (error.response?.status === 401 && user) {
         logout();
         return;
       }
@@ -83,15 +84,17 @@ function App() {
       const message =
         error.response?.data?.message ?? "Unexpected error. Please try again.";
 
-      toast.error(message, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "light",
-      });
+      if (showToast) {
+        toast.error(message, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light",
+        });
+      }
     },
     [logout]
   );
@@ -99,11 +102,11 @@ function App() {
   const getUserData = useCallback(async () => {
     try {
       const response = await apiClient.get<UserProfile>("/api/auth/user/");
-
       setUser(response.data);
       setIsLoaded(true);
+      navigate("/browse", { replace: true });
     } catch (error) {
-      handleApiError(error as AxiosError<ApiErrorResponse>);
+      handleApiError(error as AxiosError<ApiErrorResponse>, false);
       setIsLoaded(true);
     }
   }, [handleApiError]);
@@ -116,14 +119,21 @@ function App() {
 
       setNotifications(normaliseNotifications(response.data.results));
     } catch (error) {
-      handleApiError(error as AxiosError<ApiErrorResponse>);
+      handleApiError(error as AxiosError<ApiErrorResponse>, false);
     }
   }, [handleApiError]);
 
   useEffect(() => {
-    getUserData();
-    getNotifications();
-  }, []);
+    if (!user) {
+      getUserData();
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (user) {
+      getNotifications();
+    }
+  }, [user]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
