@@ -212,7 +212,6 @@ export default function BrowseItems() {
 
   return (
     <section className={styles["browse"]}>
-      <pre>{JSON.stringify(items, null, 4)}</pre>
       <div className="auto__container">
         <div className={styles["browse__inner"]}>
           <div className={styles["browse__inner-title"]}>

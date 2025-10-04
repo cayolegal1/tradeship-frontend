@@ -64,7 +64,8 @@ export default function SingleItem() {
   const [itemData, setItemData] = useState(null);
 
   const getItem = (id) => {
-    apiClient.get(`/api/trade/items/${id}`)
+    apiClient
+      .get(`/api/trade/items/${id}`)
       .then((response) => {
         setItemData(response.data);
 
@@ -91,7 +92,8 @@ export default function SingleItem() {
   }, [item_id]);
 
   const favoriteItem = () => {
-    apiClient.post(`/api/trade/items/${item_id}/favorite`, {})
+    apiClient
+      .post(`/api/trade/items/${item_id}/favorite`, {})
       .then((response) => {
         if (response.data.message == "Item unfavorited") {
           itemData.favorite_count -= 1;
