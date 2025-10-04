@@ -22,7 +22,7 @@ export default function PostItem() {
   const [title, setTitle] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [description, setDescription] = useState("");
-  const [estimatedValue, setEstimatedValue] = useState("");
+  const [estimatedValue, setEstimatedValue] = useState("10");
 
   const [shippingWeight, setShippingWeight] = useState("");
   const [shippingDimensions, setShippingDimensions] = useState({
@@ -31,7 +31,7 @@ export default function PostItem() {
     height: "",
   });
 
-  const [images, setImages] = useState([]);
+  const [imagesList, setImagesList] = useState<File[]>([]);
 
   const stepConfig = [
     {
@@ -69,10 +69,9 @@ export default function PostItem() {
       .then((response) => {
         const categories = response.data.map((category) => ({
           id: category.id,
-          value: `${category.icon || ""} ${category.name}`,
+          value: category.icon + " " + category.name,
         }));
-
-        setCategoryList(categories);
+        setCategoryList((prevCategories) => [...prevCategories, ...categories]);
       })
       .catch((error) => {
         toast.error(error, {
@@ -89,11 +88,135 @@ export default function PostItem() {
   };
 
   useEffect(() => {
+    if (categoryList.length > 1) {
+      return;
+    }
+
     getCategories();
   }, []);
+  const postItemFunction = async () => {
+    const name = (title ?? "").trim();
+    if (!name) return toast.error("Item title is required");
 
-  const postItemFunction = () => {
-    apiClient
+    const desc = (description ?? "").trim();
+    if (!desc) return toast.error("Description is required");
+
+    const priceNum = Number(estimatedValue);
+    if (Number.isNaN(priceNum) || priceNum < 0 || priceNum > 99999999.99) {
+      return toast.error("Price must be between 0 and 99,999,999.99");
+    }
+
+    if (!imagesList?.length)
+      return toast.error("Please add at least one image");
+    if (imagesList.length > 5) return toast.error("Up to 5 images allowed");
+
+    const invalidFile = imagesList.find(
+      (f) => !/^image\/(png|jpe?g|webp|gif)$/i.test(f.type || "")
+    );
+    if (invalidFile)
+      return toast.error(`Invalid image type: ${invalidFile.name}`);
+
+    const fd = new FormData();
+    fd.append("name", name);
+    fd.append("description", desc);
+    fd.append("price", String(priceNum));
+
+    if (shippingWeight) fd.append("shipping[weight]", String(shippingWeight));
+    if (shippingDimensions?.width)
+      fd.append(
+        "shipping[dimensions][width]",
+        String(shippingDimensions.width)
+      );
+    if (shippingDimensions?.height)
+      fd.append(
+        "shipping[dimensions][height]",
+        String(shippingDimensions.height)
+      );
+    if (shippingDimensions?.length)
+      fd.append(
+        "shipping[dimensions][length]",
+        String(shippingDimensions.length)
+      );
+
+    if (Array.isArray(selectedTags) && selectedTags.length) {
+      for (const tag of selectedTags) {
+        const id = (tag as any)?.id ?? tag;
+        fd.append("interests", String(id));
+      }
+    }
+
+    for (const file of imagesList) {
+      fd.append("images", file, file.name);
+    }
+    console.log(
+      "files ",
+      imagesList.map((f) => `${f.name} (${f.type}, ${f.size})`)
+    );
+
+    try {
+      const { data } = await apiClient.post(`/api/trade/items`, fd, {
+        withCredentials: true,
+      });
+
+      toast.success("Item posted successfully!");
+      navigate(`/browse/single-item?id=${data.item_id ?? data.id}`);
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message ??
+        err?.response?.data?.error ??
+        err?.message ??
+        "Upload failed";
+      toast.error(String(msg));
+    }
+  };
+
+  const postItemFunction2 = async () => {
+    console.log();
+
+    const data = {
+      name: title,
+      description: description,
+      price: estimatedValue,
+      shipping: {
+        weight: shippingWeight,
+        dimensions: shippingDimensions,
+      },
+      images: imagesList,
+      interests: selectedTags,
+    };
+
+    await apiClient
+      .post(`/api/trade/items`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((response) => {
+        toast.success("Item posted successfully!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+
+        navigate(`/browse/single-item?id=${response.data.item_id}`);
+      })
+      .catch((error) => {
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      });
+
+    /* apiClient
       .post("/api/trade/items", {
         name: title,
         description: description,
@@ -131,7 +254,7 @@ export default function PostItem() {
           progress: undefined,
           theme: "light",
         });
-      });
+      }); */
   };
 
   return (
@@ -158,8 +281,8 @@ export default function PostItem() {
               setShippingWeight={setShippingWeight}
               shippingDimensions={shippingDimensions}
               setShippingDimensions={setShippingDimensions}
-              images={images}
-              setImages={setImages}
+              imagesList={imagesList}
+              setImagesList={setImagesList}
             />
           </motion.div>
 
@@ -169,7 +292,7 @@ export default function PostItem() {
             icon={chevronRight}
             title="Post Item"
             styleType="primary"
-            disabled={
+            /* disabled={
               !(
                 title &&
                 description &&
@@ -177,7 +300,7 @@ export default function PostItem() {
                 shippingWeight &&
                 images.length > 0
               )
-            }
+            } */
             onClick={postItemFunction}
           />
           {!(
@@ -185,7 +308,7 @@ export default function PostItem() {
             description &&
             estimatedValue &&
             shippingWeight &&
-            images.length > 0
+            imagesList.length > 0
           ) && (
             <p style={{ color: "red", marginTop: "10px" }}>
               Please fill in all fields before posting your item.

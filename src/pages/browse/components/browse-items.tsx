@@ -212,7 +212,6 @@ export default function BrowseItems() {
 
   return (
     <section className={styles["browse"]}>
-      <pre>{JSON.stringify(items, null, 4)}</pre>
       <div className="auto__container">
         <div className={styles["browse__inner"]}>
           <div className={styles["browse__inner-title"]}>
@@ -309,14 +308,7 @@ const BrowseItem = (props) => {
       className={styles["browseItem"]}
     >
       <div className={styles["browseItem__image"]}>
-        <img
-          src={
-            SERVER_URL +
-            "/item-images/" +
-            (props.preview_image_path || "").trim()
-          }
-          alt="placeholder"
-        />
+        <img src={props.images[0]?.url} alt="placeholder" />
       </div>
       <div className={styles["browseItem__content"]}>
         <div className={styles["browseItem__top"]}>

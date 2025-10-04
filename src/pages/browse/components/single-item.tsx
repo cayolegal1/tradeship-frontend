@@ -64,7 +64,8 @@ export default function SingleItem() {
   const [itemData, setItemData] = useState(null);
 
   const getItem = (id) => {
-    apiClient.get(`/api/trade/items/${id}`)
+    apiClient
+      .get(`/api/trade/items/${id}`)
       .then((response) => {
         setItemData(response.data);
 
@@ -91,7 +92,8 @@ export default function SingleItem() {
   }, [item_id]);
 
   const favoriteItem = () => {
-    apiClient.post(`/api/trade/items/${item_id}/favorite`, {})
+    apiClient
+      .post(`/api/trade/items/${item_id}/favorite`, {})
       .then((response) => {
         if (response.data.message == "Item unfavorited") {
           itemData.favorite_count -= 1;
@@ -171,7 +173,7 @@ export default function SingleItem() {
                   ref={(slider1) => setNav1(slider1)}
                   className={styles["single__slider"]}
                 >
-                  {itemData.images.length > 0 &&
+                  {/* {itemData.images.length > 0 &&
                     itemData.images.split(",").map((item, index) => {
                       return (
                         <SingleSlide
@@ -182,6 +184,10 @@ export default function SingleItem() {
                           key={index}
                         />
                       );
+                    })} */}
+                  {Array.isArray(itemData.images) &&
+                    itemData.images.map((item, index) => {
+                      return <SingleSlide image={item.url} key={index} />;
                     })}
                 </Slider>
                 <Slider
@@ -190,7 +196,7 @@ export default function SingleItem() {
                   ref={(slider2) => setNav2(slider2)}
                   className={styles["single__swiper"]}
                 >
-                  {itemData.images.length > 0 &&
+                  {/*  {itemData.images.length > 0 &&
                     itemData.images.split(",").map((item, index) => {
                       return (
                         <SingleSwipe
@@ -201,7 +207,7 @@ export default function SingleItem() {
                           key={index}
                         />
                       );
-                    })}
+                    })} */}
                 </Slider>
               </div>
               <div className={styles["single__inner-content"]}>
