@@ -107,21 +107,21 @@ export default function Header({ user, notifications, logout }: HeaderProps) {
                   <li>
                     <Link to="/browse">Browse</Link>
                   </li>
-                  <li>
-                    <Link to="/my-trades">My Trades</Link>
-                  </li>
-                  <li>
-                    <Link to="/wallet">Wallet</Link>
-                  </li>
-                  <li>
-                    <Link to="/trade">Invite</Link>
-                  </li>
-                  <li>
-                    <Link to="/trade/post-item">Post Item</Link>
-                  </li>
                 </div>
                 {user ? (
                   <>
+                    <li>
+                      <Link to="/my-trades">My Trades</Link>
+                    </li>
+                    <li>
+                      <Link to="/wallet">Wallet</Link>
+                    </li>
+                    <li>
+                      <Link to="/trade">Invite</Link>
+                    </li>
+                    <li>
+                      <Link to="/trade/post-item">Post Item</Link>
+                    </li>
                     <div className={styles["nav__inner-tools"]}>
                       <Link to="/messages" className={styles["messageBtn"]}>
                         {messageIcon}

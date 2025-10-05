@@ -104,7 +104,9 @@ function App() {
       const response = await apiClient.get<UserProfile>("/api/auth/user/");
       setUser(response.data);
       setIsLoaded(true);
-      navigate("/browse", { replace: true });
+      if (location.pathname.includes("/auth")) {
+        navigate("/browse", { replace: true });
+      }
     } catch (error) {
       handleApiError(error as AxiosError<ApiErrorResponse>, false);
       setIsLoaded(true);
