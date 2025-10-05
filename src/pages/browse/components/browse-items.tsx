@@ -23,25 +23,26 @@ export default function BrowseItems() {
       value: "All Interests",
     },
   ]);
+
   const orderByList = [
     {
-      id: "1",
+      id: "0",
       value: "Order By Relevance",
     },
     {
-      id: "2",
+      id: "price:desc",
       value: "Order By Price (High to Low)",
     },
     {
-      id: "3",
+      id: "price:asc",
       value: "Order By Price (Low to High)",
     },
     {
-      id: "4",
+      id: "createdAt:desc",
       value: "Order By Newest",
     },
     {
-      id: "5",
+      id: "createdAt:asc",
       value: "Order By Oldest",
     },
   ];
@@ -271,6 +272,7 @@ export default function BrowseItems() {
                 <p>Try changing your search criteria or filters.</p>
               </div>
             )}
+
             {items.map((item, index) => {
               return <BrowseItem {...item} key={index} />;
             })}
@@ -296,6 +298,7 @@ export default function BrowseItems() {
     </section>
   );
 }
+
 const BrowseItem = (props) => {
   return (
     <Link
@@ -308,7 +311,7 @@ const BrowseItem = (props) => {
       <div className={styles["browseItem__content"]}>
         <div className={styles["browseItem__top"]}>
           <h5>{props.name}</h5>
-          {props.trade_type != undefined && (
+          {props.trade_type !== undefined && (
             <div
               className={classNames(styles["browseItem__status"], {
                 [styles.quick]: props.trade_type === "Quick",
@@ -327,9 +330,7 @@ const BrowseItem = (props) => {
           <p>{props.description}</p>
         </div>
         <div className={styles["browseItem__row"]}>
-          <div className={styles["browseItem__price"]}>
-            {props.estimatedValue} $
-          </div>
+          <div className={styles["browseItem__price"]}>{props.price} $</div>
           {Array.isArray(props.interests) &&
             props.interests.map((tag) => (
               <div key={tag.id} className={styles["browseItem__field"]}>
