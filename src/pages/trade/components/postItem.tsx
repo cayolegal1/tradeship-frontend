@@ -69,9 +69,10 @@ export default function PostItem() {
       .then((response) => {
         const categories = response.data.map((category) => ({
           id: category.id,
-          value: category.icon + " " + category.name,
+          value: `${category.icon || ""} ${category.name}`,
         }));
-        setCategoryList((prevCategories) => [...prevCategories, ...categories]);
+
+        setCategoryList(categories);
       })
       .catch((error) => {
         toast.error(error, {
