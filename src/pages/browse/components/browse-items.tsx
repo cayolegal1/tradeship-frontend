@@ -126,7 +126,7 @@ export default function BrowseItems() {
           value: `${category.icon || ""} ${category.name}`,
         }));
 
-        setCategoryList(categories);
+        setCategoryList((prev) => [...prev, ...categories]);
       })
       .catch((error) => {
         toast.error(error, {
