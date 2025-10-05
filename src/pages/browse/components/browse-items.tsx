@@ -70,6 +70,7 @@ export default function BrowseItems() {
   const [selectedCategory, setSelectedCategory] = useState(categoryList[0]);
   const [selectedTradeType, setSelectedTradeType] = useState(tradeTypeList[0]);
   const [selectedOrderBy, setSelectedOrderBy] = useState(orderByList[0]);
+  const [isMounted, setIsMounted] = useState(false);
 
   const [loadingItems, setLoadingItems] = useState(false);
 
@@ -90,12 +91,7 @@ export default function BrowseItems() {
           "&trade_type=" +
           selectedTradeType.id +
           "&order_by=" +
-          selectedOrderBy.id,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+          selectedOrderBy.id
       )
       .then((response) => {
         const { results } = response.data;
@@ -123,18 +119,14 @@ export default function BrowseItems() {
 
   const getCategories = () => {
     apiClient
-      .get(SERVER_URL + "/api/trade/interests/", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
+      .get(SERVER_URL + "/api/trade/interests/")
       .then((response) => {
         const categories = response.data.map((category) => ({
           id: category.id,
-          value: /*category.icon + " " + */ category.name,
+          value: `${category.icon || ""} ${category.name}`,
         }));
 
-        setCategoryList((prevCategories) => [...prevCategories, ...categories]);
+        setCategoryList(categories);
       })
       .catch((error) => {
         toast.error(error, {
@@ -167,18 +159,17 @@ export default function BrowseItems() {
     if (categoryList.length < 2) {
       // If categories are not loaded yet, do not fetch items
       return;
-    }
+    } // Reset items and pagination when search query or filters change
 
-    // Reset items and pagination when search query or filters change
-    setLoaded(false);
-    setItems([]);
-    setAllItemsLoaded(false);
-
-    // Wait for the user to finish typing before fetching items
     const delayDebounceFn = setTimeout(() => {
+      setLoaded(false);
+      setItems([]);
+      setAllItemsLoaded(false); // Wait for the user to finish typing before fetching items
+
       if (currentPage > 1) {
         setCurrentPage(1); // Reset to first page and trigger new fetch
       } else {
+        if (!isMounted) return; // Prevent fetching on initial mount;
         getItems(1); // Fetch items for the first page
       }
     }, 1000); // Adjust the delay as needed
@@ -210,6 +201,10 @@ export default function BrowseItems() {
     };
   }, [allItemsLoaded]);
 
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <section className={styles["browse"]}>
       <div className="auto__container">
@@ -233,21 +228,21 @@ export default function BrowseItems() {
                 <CustomSelect
                   list={categoryList}
                   selected={selectedCategory}
-                  onChange={setSelectedCategory}
+                  onChange={setSelectedCategory as any}
                 />
               </div>
               <div className={styles["filter__select"]}>
                 <CustomSelect
                   list={tradeTypeList}
                   selected={selectedTradeType}
-                  onChange={setSelectedTradeType}
+                  onChange={setSelectedTradeType as any}
                 />
               </div>
               <div className={styles["filter__select"]}>
                 <CustomSelect
                   list={orderByList}
                   selected={selectedOrderBy}
-                  onChange={setSelectedOrderBy}
+                  onChange={setSelectedOrderBy as any}
                 />
               </div>
             </div>
@@ -335,16 +330,12 @@ const BrowseItem = (props) => {
           <div className={styles["browseItem__price"]}>
             {props.estimatedValue} $
           </div>
-          {props.interests.length > 0 &&
-            props.interests
-              .split(",")
-              .filter((tag) => tag.trim() !== "")
-              .slice(0, 1) // Limit to 1 tag
-              .map((tag, index) => (
-                <div className={styles["browseItem__field"]}>
-                  <span key={index}>{tag.trim()}</span>
-                </div>
-              ))}
+          {Array.isArray(props.interests) &&
+            props.interests.map((tag) => (
+              <div key={tag.id} className={styles["browseItem__field"]}>
+                <span key={tag.id}>{tag.name.trim()}</span>
+              </div>
+            ))}
         </div>
         <div className={styles["browseItem__row"]}>
           <div className={styles["browseItem__profile"]}>

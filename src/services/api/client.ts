@@ -4,6 +4,9 @@ import { SERVER_URL } from "@/config";
 export const apiClient = axios.create({
   baseURL: SERVER_URL,
   withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 apiClient.interceptors.request.use((config) => {
@@ -16,11 +19,7 @@ apiClient.interceptors.request.use((config) => {
     typeof FormData !== "undefined" && config.data instanceof FormData;
 
   if (isFormData) {
-    headers.delete("Content-Type");
-  } else {
-    if (!headers.has("Content-Type")) {
-      headers.set("Content-Type", "application/json");
-    }
+    headers.set("Content-Type", "multipart/form-data");
   }
 
   return config;

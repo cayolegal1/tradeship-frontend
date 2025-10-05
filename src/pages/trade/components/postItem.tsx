@@ -149,10 +149,6 @@ export default function PostItem() {
     for (const file of imagesList) {
       fd.append("images", file, file.name);
     }
-    console.log(
-      "files ",
-      imagesList.map((f) => `${f.name} (${f.type}, ${f.size})`)
-    );
 
     try {
       const { data } = await apiClient.post(`/api/trade/items`, fd, {
@@ -172,8 +168,6 @@ export default function PostItem() {
   };
 
   const postItemFunction2 = async () => {
-    console.log();
-
     const data = {
       name: title,
       description: description,

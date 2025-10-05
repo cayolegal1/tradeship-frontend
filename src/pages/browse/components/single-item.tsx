@@ -173,42 +173,18 @@ export default function SingleItem() {
                   ref={(slider1) => setNav1(slider1)}
                   className={styles["single__slider"]}
                 >
-                  {/* {itemData.images.length > 0 &&
-                    itemData.images.split(",").map((item, index) => {
-                      return (
-                        <SingleSlide
-                          image={
-                            SERVER_URL + "/item-images/" + item.trim() ||
-                            placeholder
-                          }
-                          key={index}
-                        />
-                      );
-                    })} */}
                   {Array.isArray(itemData.images) &&
                     itemData.images.map((item, index) => {
                       return <SingleSlide image={item.url} key={index} />;
                     })}
                 </Slider>
+
                 <Slider
                   {...settings2}
                   asNavFor={nav1}
                   ref={(slider2) => setNav2(slider2)}
                   className={styles["single__swiper"]}
-                >
-                  {/*  {itemData.images.length > 0 &&
-                    itemData.images.split(",").map((item, index) => {
-                      return (
-                        <SingleSwipe
-                          image={
-                            SERVER_URL + "/item-images/" + item.trim() ||
-                            placeholder
-                          }
-                          key={index}
-                        />
-                      );
-                    })} */}
-                </Slider>
+                ></Slider>
               </div>
               <div className={styles["single__inner-content"]}>
                 <div className={styles["singleInfo"]}>
@@ -354,13 +330,11 @@ export default function SingleItem() {
                 <div className={styles["singleTags"]}>
                   <h6>Tags</h6>
                   <div className={styles["singleTags__row"]}>
-                    {itemData.interests.length > 0 &&
+                    {Array.isArray(itemData.interests) &&
                       itemData.interests
-                        .split(",")
-                        .filter((tag) => tag.trim() !== "")
-                        .slice(0, 5) // Limit to 5 tags
-                        .map((tag, index) => (
-                          <span key={index}>{tag.trim()}</span>
+                        .filter((tag) => !!tag.name)
+                        .map((tag) => (
+                          <span key={tag.id}>{tag.name.trim()}</span>
                         ))}
                   </div>
                 </div>

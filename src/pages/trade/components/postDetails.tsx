@@ -73,10 +73,6 @@ export default function PostDetails({
       formData.append("images", file);
     });
 
-    console.log(files);
-
-    // console.log({ files });
-
     // setImages((prev) => [...prev, ...files]);
 
     setUploading(false);

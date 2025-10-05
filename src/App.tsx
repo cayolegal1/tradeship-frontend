@@ -115,7 +115,7 @@ function App() {
     try {
       const response = await apiClient.get<
         PaginatedResponse<NotificationApiModel>
-      >("/api/notifications/notifications/");
+      >("/api/notifications");
 
       setNotifications(normaliseNotifications(response.data.results));
     } catch (error) {
