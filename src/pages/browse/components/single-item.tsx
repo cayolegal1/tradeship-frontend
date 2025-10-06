@@ -318,7 +318,7 @@ export default function SingleItem() {
                     <button
                       type="button"
                       onClick={() =>
-                        navigate("/user-profile?id=" + itemData.owner)
+                        navigate("/user-profile?id=" + itemData.ownerId)
                       }
                     >
                       View Profile

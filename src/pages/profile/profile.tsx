@@ -56,7 +56,7 @@ export default function Profile({ user }: ProfileProps) {
       const activeUserId = user?.id ? String(user.id) : null;
       const endpoint =
         requestedUserId && requestedUserId !== activeUserId
-          ? `/api/auth/profiles/user/${requestedUserId}/`
+          ? `/api/auth/profile/user/${requestedUserId}/`
           : "/api/auth/user/";
 
       const response = await apiClient.get<UserProfile>(endpoint);
@@ -120,4 +120,3 @@ export default function Profile({ user }: ProfileProps) {
     </section>
   );
 }
-
