@@ -114,6 +114,9 @@ export default function Header({ user, notifications, logout }: HeaderProps) {
                       <Link to="/my-trades">My Trades</Link>
                     </li>
                     <li>
+                      <Link to="/trade-requests">Trade Requests</Link>
+                    </li>
+                    <li>
                       <Link to="/wallet">Wallet</Link>
                     </li>
                     <li>

@@ -19,7 +19,7 @@ import placeholder from "@/assets/images/placeholder.png";
 import avatar from "@/assets/images/avatars/1.png";
 import Slider from "react-slick";
 import { CustomButton } from "@/components/custom-button/custom-button";
-import StartChat from "./start-chat";
+import { CreateTradeRequestModal } from "@/components/trade-request/create-trade-request-modal";
 import { AnimatePresence } from "framer-motion";
 
 // third party
@@ -32,7 +32,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 
 export default function SingleItem() {
-  const [showChat, setShowChat] = useState(false);
+  const [showTradeRequestModal, setShowTradeRequestModal] = useState(false);
   const navigate = useNavigate();
   const [nav1, setNav1] = useState();
   const [nav2, setNav2] = useState();
@@ -261,9 +261,9 @@ export default function SingleItem() {
                   <div className={styles["singleInfo__price"]}></div>
                   <div className={styles["singleInfo__buttons"]}>
                     <CustomButton
-                      title="Trade with Me"
+                      title="Send Trade Request"
                       styleType="primary"
-                      onClick={() => setShowChat(!showChat)}
+                      onClick={() => setShowTradeRequestModal(true)}
                     />
                     <CustomButton
                       iconPos="left"
@@ -387,8 +387,18 @@ export default function SingleItem() {
         </div>
       </section>
       <AnimatePresence>
-        {showChat && (
-          <StartChat showChat={showChat} setShowChat={setShowChat} />
+        {showTradeRequestModal && itemData && (
+          <CreateTradeRequestModal
+            isOpen={showTradeRequestModal}
+            onClose={() => setShowTradeRequestModal(false)}
+            recipientId={itemData.ownerId}
+            requestedItem={itemData}
+            onSuccess={(tradeRequestId) => {
+              console.log('Trade request created:', tradeRequestId);
+              // Optionally navigate to trade requests page
+              // navigate('/trade-requests');
+            }}
+          />
         )}
       </AnimatePresence>
     </>

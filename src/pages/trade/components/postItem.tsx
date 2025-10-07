@@ -157,11 +157,11 @@ export default function PostItem() {
 
       toast.success("Item posted successfully!");
       navigate(`/browse/single-item?id=${data.item_id ?? data.id}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       const msg =
-        err?.response?.data?.message ??
-        err?.response?.data?.error ??
-        err?.message ??
+        (err as any)?.response?.data?.message ??
+        (err as any)?.response?.data?.error ??
+        (err as Error)?.message ??
         "Upload failed";
       toast.error(String(msg));
     }

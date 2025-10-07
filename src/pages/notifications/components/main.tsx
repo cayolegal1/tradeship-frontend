@@ -58,7 +58,7 @@ const calculateTimeDifference = (from: Date, to: Date): string => {
 };
 
 const resolveCategory = (typeName: string): NotificationCategory => {
-  const normalised = typeName.toLowerCase() as NotificationCategory;
+  const normalised = typeName?.toLowerCase() as NotificationCategory;
   return normalised in iconMap ? normalised : "messages";
 };
 
@@ -136,4 +136,3 @@ export default function Main({ notifications }: MainProps) {
     </div>
   );
 }
-

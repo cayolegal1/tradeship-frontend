@@ -229,21 +229,21 @@ export default function BrowseItems() {
                 <CustomSelect
                   list={categoryList}
                   selected={selectedCategory}
-                  onChange={setSelectedCategory as any}
+                  onChange={(option) => setSelectedCategory(option)}
                 />
               </div>
               <div className={styles["filter__select"]}>
                 <CustomSelect
                   list={tradeTypeList}
                   selected={selectedTradeType}
-                  onChange={setSelectedTradeType as any}
+                  onChange={(option) => setSelectedTradeType(option)}
                 />
               </div>
               <div className={styles["filter__select"]}>
                 <CustomSelect
                   list={orderByList}
                   selected={selectedOrderBy}
-                  onChange={setSelectedOrderBy as any}
+                  onChange={(option) => setSelectedOrderBy(option)}
                 />
               </div>
             </div>

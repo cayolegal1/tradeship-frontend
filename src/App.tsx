@@ -25,6 +25,7 @@ import Wallet from "./pages/wallet/wallet";
 import MyTrades from "./pages/my-trades/my-trades";
 import Profile from "./pages/profile/profile";
 import Notifications from "./pages/notifications/notifications";
+import TradeRequests from "./pages/trade-requests/trade-requests";
 
 import type { Notification, PaginatedResponse, UserProfile } from "./types";
 
@@ -160,7 +161,7 @@ function App() {
       <Header user={user} notifications={notifications} logout={logout} />
       <Routes>
         <Route path="" element={<Landing />} />
-        <Route path="/messages" element={<Messages />} />
+        <Route path="/messages" element={<Messages user={user} />} />
         <Route
           path="/notifications"
           element={
@@ -172,6 +173,7 @@ function App() {
         />
         <Route path="/wallet" element={<Wallet />} />
         <Route path="/my-trades" element={<MyTrades />} />
+        <Route path="/trade-requests" element={<TradeRequests user={user} />} />
         <Route path="/user-profile" element={<Profile user={user} />} />
         <Route path="/trade/*" element={<Trade />} />
         <Route path="/browse/*" element={<Browse />} />
